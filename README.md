@@ -29,3 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 }
 ```
+```
+In above code to have security in the springboot application we have extended from websecurity configrue adapter which is an interface and implemented
+or override the methods configure with authManager where we can give password and userName for basic form login
+```
