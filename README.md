@@ -108,3 +108,38 @@ public class EMSSecurity extends WebSecurityConfigureAdapter{
 public PasswordEncoder passwordEncoder(){
 return new BCryptPasswordEncoder();
 }
+=====================================================================================This is the legacy conecpt and after the spring 2.5x they define secuirtyFilterChain:
+this is the replacement for the websecurityConfigurerAdapter
+
+- UserDetails and UserDetailsService class we need to remember
+-userDetails class holds all the info required for the  
+@Configuration
+@EnableWebSecurity
+public class EMSUpgradeSecuityConfig{
+@Bean
+public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
+    UserDetails admmin =User.withUsername("Basant")
+        .password(passwordEncoder.encode("pw2")).roles("ADMIN").build();
+
+    UserDetails user =User.withUsername("Basant")
+        .password(passwordEncoder.encode("pw2")).roles("USER").build();
+
+    UserDetails userAdmmin =User.withUsername("Basant")
+        .password(passwordEncoder.encode("pw2")).roles("ADMIN","USER").build();
+
+    return new InMemoryUserDetailsManager(user,admin,userAdmin);
+}
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http){
+    http.authorizeRequests()
+        .antMatchers("/nonsecureapp").permitAll()
+        .and()
+        .authorizeRequests().antMatchers("/welcome","/text")
+        .authenticated().and().httpBasic().and().build();
+}
+@Bean
+public PasswordEncoder passwordEncoder(){
+    return new BcryptPasswordEncoder();
+}
+
+}
