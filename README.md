@@ -143,3 +143,78 @@ public PasswordEncoder passwordEncoder(){
 }
 
 }
+```
+### Authentication and Role based authorization
+```
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class EMSSecurityConifg {
+
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
+        UserDetails hr = User.withUsername("rabin")
+                .password(passwordEncoder.encode("pwd1"))
+                .roles("HR").build();
+        UserDetails manager = User.withUsername("sabin")
+                .password(passwordEncoder.encode("pwd2"))
+                .roles("MANAGER").build();
+        UserDetails admin = User.withUsername("abin")
+                .password(passwordEncoder.encode("pwd3"))
+                .roles("HR","MANAGER").build();
+        UserDetails emp = User.withUsername("bin")
+                .password(passwordEncoder.encode("pwd3"))
+                .roles("EMPLOYEE").build();
+
+        return new InMemoryUserDetailsManager(emp,hr,admin,manager);
+    }
+
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        return http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/employees/welcome")
+                .permitAll().and()
+                .authorizeRequests()
+                .antMatchers("/employees/**")
+                .authenticated()
+                .and()
+                .httpBasic().and().build();
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+}
+=====================================================================================
+
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+    @Autowired
+    private EmployeeService service;
+
+    @GetMapping("/welcome")
+    public String welcome(){
+        return "welcome java techie";
+    }
+    @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_HR')")
+    public Employee onboardNewEmployee(@RequestBody Employee employee){
+        return service.createNewEmployee(employee);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_HR') ")
+    public List<Employee>getAllEmployee(){
+        return service.getEmployee();
+    }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    public Employee getEmployeeById(@PathVariable Integer id){
+        return service.getEmployee(id);
+    }
+}
+```
