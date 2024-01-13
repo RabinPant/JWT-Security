@@ -18,7 +18,6 @@ public class EmployeeController {
     public String welcome(){
         return "welcome java techie";
     }
-
     @PostMapping("/create")
     public Employee onboardNewEmployee(@RequestBody Employee employee){
         return service.createNewEmployee(employee);
@@ -26,16 +25,15 @@ public class EmployeeController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_HR') ")
+    //test
     public List<Employee>getAllEmployee(){
         return service.getEmployee();
     }
-
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
     public Employee getEmployeeById(@PathVariable Integer id){
         return service.getEmployee(id);
     }
-
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('ROLE_HR')")
     public Employee updateRoleEmployee(@RequestBody Employee employee){
