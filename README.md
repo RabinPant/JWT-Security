@@ -218,3 +218,10 @@ public class EmployeeController {
     }
 }
 ```
+### Internal Flow
+```
+* Filter => aunthenticate and authroization
+userName and Password => DelegatingFilterProxy(Convert servlet request to Authentication object from where Principal and Credential Object are extracted)
+Filter doesn't know itself how to do authentication, so it will take help of the Authentication Manager.
+
+```
